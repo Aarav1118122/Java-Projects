@@ -139,7 +139,7 @@ public class GamePanel extends JPanel implements ActionListener {
             running = false;
             deleteBodyParts();
         }
-        if (x[0] > screenWidth) {
+        if (x[0] > screenWidth - unitSize) {
             running = false;
             deleteBodyParts();
         }
@@ -147,7 +147,7 @@ public class GamePanel extends JPanel implements ActionListener {
             running = false;
             deleteBodyParts();
         }
-        if (y[0] > screenHeight) {
+        if (y[0] > screenHeight - unitSize) {
             running = false;
             deleteBodyParts();
         }
