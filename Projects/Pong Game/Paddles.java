@@ -3,11 +3,15 @@ import java.awt.event.*;
 
 public class Paddles extends Rectangle {
     int id;
-    int yvelocity = 10;
+    int x, y;
+    int yvelocity;
+    int paddleSpeed = 10;
 
     Paddles(int x, int y, int PADDLES_WIDTH, int PADDLES_HEIGHT, int id) {
         super(x, y, PADDLES_WIDTH, PADDLES_HEIGHT);
         this.id = id;
+        this.x = x;
+        this.y = y;
     }
 
     public void draw(Graphics g) {
@@ -24,21 +28,21 @@ public class Paddles extends Rectangle {
         switch (this.id) {
             case 1:
                 if (e.getKeyCode() == KeyEvent.VK_W) {
-                    yvelocity *= -1;
+                    setYDirection(-paddleSpeed);
                     move();
-                    yvelocity *= -1;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_S) {
+                    setYDirection(paddleSpeed);
                     move();
                 }
                 break;
             case 2:
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    yvelocity *= -1;
+                    setYDirection(-paddleSpeed);
                     move();
-                    yvelocity *= -1;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    setYDirection(paddleSpeed);
                     move();
                 }
                 break;
@@ -49,35 +53,31 @@ public class Paddles extends Rectangle {
         switch (this.id) {
             case 1:
                 if (e.getKeyCode() == KeyEvent.VK_W) {
-                    yvelocity = 0;
+                    setYDirection(0);
                     move();
-                    yvelocity = 10;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_S) {
-                    yvelocity = 0;
+                    setYDirection(0);
                     move();
-                    yvelocity = 10;
                 }
                 break;
             case 2:
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    yvelocity = 0;
+                    setYDirection(0);
                     move();
-                    yvelocity = 10;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    yvelocity = 0;
-                    move();
-                    yvelocity = 10;
+                    setYDirection(0);
                 }
                 break;
         }
     }
 
+    public void setYDirection(int yDirection) {
+        yvelocity = yDirection;
+    }
+
     public void move() {
         y = y + yvelocity;
-        if (y < 0) {
-            y = 0;
-        }
     }
 }
