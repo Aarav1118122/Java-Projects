@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Random;
 
 public class GamePanel extends JPanel implements Runnable {
     static final int SCREEN_WIDTH = 1000;
@@ -15,27 +16,30 @@ public class GamePanel extends JPanel implements Runnable {
     Paddles paddle1;
     Paddles paddle2;
     Ball ball;
+    Random random;
     boolean running = false;
     int paddley = ((SCREEN_HEIGHT / 2) - (PADDLES_HEIGHT / 2));
     int paddle2x = (SCREEN_WIDTH - PADDLES_WIDTH);
+    int randomBallStart;
+    int paddle1Score = 0;
+    int paddle2Score = 0;
 
     GamePanel() {
-        newBall();
-        newPaddles();
         this.setVisible(true);
         this.setFocusable(true);
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         this.setBackground(Color.blue);
+        newBall();
+        newPaddles();
         thread = new Thread(this);
         thread.start();
+        random = new Random();
         this.addKeyListener(new keyListener());
-        paddle1.yvelocity = 0;
-        paddle2.yvelocity = 0;
+        randomBallStart = random.nextInt(SCREEN_HEIGHT);
     }
 
     public void newBall() {
-        ball = new Ball(((SCREEN_WIDTH - BALL_DIAMETER) / 2), ((SCREEN_HEIGHT - BALL_DIAMETER) / 2), BALL_DIAMETER,
-                BALL_DIAMETER);
+        ball = new Ball(((SCREEN_WIDTH - BALL_DIAMETER) / 2), randomBallStart, BALL_DIAMETER, BALL_DIAMETER);
     }
 
     public void newPaddles() {
@@ -51,6 +55,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void draw(Graphics g) {
+        g.setColor(Color.white);
+        g.setFont(new Font("Consolas", Font.PLAIN, 60));
+        g.drawLine(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+        g.drawString(Integer.toString(paddle1Score), (SCREEN_WIDTH / 2) - 50, 50);
+        g.drawString(Integer.toString(paddle2Score), (SCREEN_WIDTH / 2) + 20, 50);
         paddle1.draw(g);
         paddle2.draw(g);
         ball.draw(g);
@@ -63,6 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void checkCollisions() {
+        // checking paddle for not going out of frame
         if (paddle1.y < 0) {
             paddle1.y = 0;
         }
@@ -75,41 +85,40 @@ public class GamePanel extends JPanel implements Runnable {
         if (paddle2.y > (SCREEN_HEIGHT - PADDLES_HEIGHT)) {
             paddle2.y = (SCREEN_HEIGHT - PADDLES_HEIGHT);
         }
+        // bouncing the ball at the top and the bottom of the frame;
         if (ball.y < 0 || ball.y > (SCREEN_HEIGHT - BALL_DIAMETER)) {
-            ball.randomYVelocity *= -1;
+            ball.yVelocity *= -1;
+            ball.setYDirection(ball.yVelocity);
         }
-        if (ball.x < 0 || ball.x > (SCREEN_WIDTH - BALL_DIAMETER)) {
+        // checking if the ball is missed by any paddle
+        if (ball.x < 0) {
+            paddle2Score++;
             newBall();
+            newPaddles();
         }
-
-        for (int i = -BALL_DIAMETER; i <= PADDLES_HEIGHT + BALL_DIAMETER; i++) {
-            if (ball.x == (paddle1.x + PADDLES_WIDTH) && ((ball.y + (BALL_DIAMETER / 2)) == (paddle1.y + i))) {
-                System.out.println("this is the blue paddle");
-                System.out.println(ball.randomXVelocity);
-
-                ball.randomXVelocity *= -1;
-                /*
-                 * if (ball.randomXVelocity > 0) ball.randomXVelocity += 1; if
-                 * (ball.randomXVelocity < 0) ball.randomXVelocity -= 1; //
-                 * ball.updateBallSpeed();
-                 */
-                System.out.println(ball.randomXVelocity);
-            }
-            if (ball.x == (paddle2.x - PADDLES_WIDTH) && ((ball.y + (BALL_DIAMETER / 2)) == (paddle2.y + i))) {
-                System.out.println("this is the red paddle");
-                System.out.println(ball.randomXVelocity);
-                ball.randomXVelocity -= 1;
-                if (ball.randomXVelocity > 0) {
-                    ball.randomXVelocity += 1;
-                }
-                if (ball.randomXVelocity < 0) {
-                }
-                ball.randomXVelocity *= -1;
-                // ball.updateBallSpeed();
-                System.out.println(ball.randomXVelocity);
+        if (ball.x > (SCREEN_WIDTH - BALL_DIAMETER)) {
+            paddle1Score++;
+            newBall();
+            newPaddles();
+        }
+        if (ball.intersects(paddle1)) {
+            ball.xVelocity = Math.abs(ball.xVelocity);
+            ball.xVelocity++;
+            if (ball.yVelocity < 0) {
+                ball.setYDirection(-ball.xVelocity);
+            } else {
+                ball.setYDirection(ball.xVelocity);
             }
         }
-
+        if (ball.intersects(paddle2)) {
+            ball.xVelocity = -(Math.abs(ball.xVelocity));
+            ball.xVelocity--;
+            if (ball.yVelocity < 0) {
+                ball.setYDirection(ball.xVelocity);
+            } else {
+                ball.setYDirection(-ball.xVelocity);
+            }
+        }
     }
 
     public void run() {

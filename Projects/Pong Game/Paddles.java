@@ -3,15 +3,12 @@ import java.awt.event.*;
 
 public class Paddles extends Rectangle {
     int id;
-    int x, y;
     int yvelocity;
     int paddleSpeed = 10;
 
     Paddles(int x, int y, int PADDLES_WIDTH, int PADDLES_HEIGHT, int id) {
         super(x, y, PADDLES_WIDTH, PADDLES_HEIGHT);
         this.id = id;
-        this.x = x;
-        this.y = y;
     }
 
     public void draw(Graphics g) {

@@ -2,12 +2,8 @@ import java.awt.*;
 import java.util.Random;
 
 public class Ball extends Rectangle {
-    int ballWidth;
-    int ballHeight;
-    int x;
-    int y;
-    int randomXVelocity;
-    int randomYVelocity;
+    int xVelocity;
+    int yVelocity;
     int randomXDirection;
     int randomYDirection;
     int ballSpeed = 5;
@@ -16,22 +12,24 @@ public class Ball extends Rectangle {
     Ball(int x, int y, int width, int height) {
         super(x, y, width, height);
         random = new Random();
-        randomXVelocity = random.nextInt(10);
-        // this.ballDiameter = ballDiameter;
-        ballWidth = width;
-        ballHeight = height;
-        this.x = x;
-        this.y = y;
-        randomXVelocity = ballSpeed;
-        randomYVelocity = ballSpeed;
         randomXDirection = random.nextInt(2);
-        randomYDirection = random.nextInt(2);
         if (randomXDirection == 0) {
-            randomXVelocity *= -1;
+            randomXDirection--;
         }
+        setXDirection(randomXDirection * ballSpeed);
+        randomYDirection = random.nextInt(2);
         if (randomYDirection == 0) {
-            randomYVelocity *= -1;
+            randomYDirection--;
         }
+        setYDirection(randomYDirection * ballSpeed);
+    }
+
+    public void setXDirection(int randomXDirection) {
+        xVelocity = randomXDirection;
+    }
+
+    public void setYDirection(int randomYDirection) {
+        yVelocity = randomYDirection;
     }
 
     public void draw(Graphics g) {
@@ -40,11 +38,7 @@ public class Ball extends Rectangle {
     }
 
     public void move() {
-        x += randomXVelocity;
-        y += randomYVelocity;
-    }
-
-    public void updateBallSpeed() {
-        ballSpeed += 10;
+        x += xVelocity;
+        y += yVelocity;
     }
 }
